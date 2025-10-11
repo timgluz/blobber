@@ -1,0 +1,9 @@
+---
+port: 8080
+log_level: info
+blob_provider: s3
+s3_config:
+  bucket: blobber-test
+  region: auto
+  endpoint: "https://0d10b377f57cf5a47fd9ca9b8ba2d5c2.r2.cloudflarestorage.com"
+  use_path_style: true

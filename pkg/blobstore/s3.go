@@ -118,3 +118,27 @@ func (s *S3BlobStore) Delete(ctx context.Context, key string) error {
 	}
 	return nil
 }
+
+func (s *S3BlobStore) List(ctx context.Context, prefix string) ([]string, error) {
+	s.logger.Debug("List", slog.String("prefix", prefix))
+
+	var keys []string
+	paginator := s3.NewListObjectsV2Paginator(s.client, &s3.ListObjectsV2Input{
+		Bucket: aws.String(s.Bucket),
+		Prefix: aws.String(prefix),
+	})
+
+	for paginator.HasMorePages() {
+		page, err := paginator.NextPage(ctx)
+		if err != nil {
+			s.logger.Error("ListObjectsV2 failed", slog.String("prefix", prefix), slog.String("bucket", s.Bucket), slog.Any("error", err))
+			return nil, err
+		}
+
+		for _, obj := range page.Contents {
+			keys = append(keys, *obj.Key)
+		}
+	}
+
+	return keys, nil
+}

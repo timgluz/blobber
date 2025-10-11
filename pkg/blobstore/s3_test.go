@@ -76,6 +76,23 @@ func TestS3BlobStore_CRUD(t *testing.T) {
 	require.NoError(t, err, "failed to delete test data")
 }
 
+func TestS3BlobStore_List(t *testing.T) {
+	logger := initTestLogger(t)
+	credsProvider := blobstore.NewEnvS3Credentials()
+	s3Config := loadTestS3Config(t, "../../tests/fixtures/r2_config.yaml")
+
+	s3Client, err := blobstore.NewS3Client(*s3Config, credsProvider, logger)
+	require.NoError(t, err, "failed to create S3 client")
+
+	store, err := blobstore.NewS3BlobStore(s3Config.Bucket, s3Client, logger)
+	require.NoError(t, err, "failed to create S3 blob store")
+
+	ctx := context.Background()
+	keys, err := store.List(ctx, "test")
+	require.NoError(t, err, "failed to list objects")
+	assert.Contains(t, keys, "test.json")
+}
+
 func loadTestS3Config(t *testing.T, configPath string) *blobstore.S3Config {
 	t.Helper()
 
