@@ -1,6 +1,7 @@
 package blobstore
 
 import (
+	"bytes"
 	"context"
 	"io"
 	"log/slog"
@@ -84,4 +85,36 @@ func (s *S3BlobStore) Get(ctx context.Context, key string) ([]byte, error) {
 	}
 
 	return content, nil
+}
+
+func (s *S3BlobStore) Put(ctx context.Context, key string, data []byte) error {
+	s.logger.Debug("Put", slog.String("key", key), slog.Int("size", len(data)))
+
+	_, err := s.client.PutObject(ctx, &s3.PutObjectInput{
+		Bucket: aws.String(s.Bucket),
+		Key:    aws.String(key),
+		Body:   bytes.NewReader(data),
+	})
+
+	if err != nil {
+		s.logger.Error("PutObject failed", slog.String("key", key), slog.String("bucket", s.Bucket), slog.Any("error", err))
+		return err
+	}
+
+	return nil
+}
+
+func (s *S3BlobStore) Delete(ctx context.Context, key string) error {
+	s.logger.Debug("Delete", slog.String("key", key))
+
+	_, err := s.client.DeleteObject(ctx, &s3.DeleteObjectInput{
+		Bucket: aws.String(s.Bucket),
+		Key:    aws.String(key),
+	})
+
+	if err != nil {
+		s.logger.Error("DeleteObject failed", slog.String("key", key), slog.String("bucket", s.Bucket), slog.Any("error", err))
+		return err
+	}
+	return nil
 }
