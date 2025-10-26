@@ -1,0 +1,37 @@
+title: test blobs endpoints
+steps:
+  - title: get blobs
+    protocol: http
+    request:
+      method: GET
+      url: http://localhost:8080/blobs
+    expect:
+      code: OK
+      body:
+        items: ["test.json"]
+  - title: get blobs by prefix
+    protocol: http
+    request:
+      method: GET
+      url: http://localhost:8080/blobs?prefix=te
+    expect:
+      code: OK
+      body:
+        items: ["test.json"]
+  - title: get blob
+    protocol: http
+    request:
+      method: GET
+      url: http://localhost:8080/blobs/test.json
+    expect:
+      code: OK
+      body: '{"success": true}'
+  - title: get non-existing blob
+    protocol: http
+    request:
+      method: GET
+      url: http://localhost:8080/blobs/non-existing.json
+    expect:
+      code: Not Found
+      body: "Blob not found\n"
+# TODO: add more tests for uploading, deleting blobs, etc.

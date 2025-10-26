@@ -34,14 +34,23 @@ func (c StaticS3Credentials) Retrieve(ctx context.Context) (aws.Credentials, err
 	}, nil
 }
 
-type EnvS3Credentials struct{}
+type EnvS3Credentials struct {
+	AccessKeyIDVar     string
+	SecretAccessKeyVar string
+	SessionTokenVar    string
+}
 
 func NewEnvS3Credentials() *EnvS3Credentials {
-	return &EnvS3Credentials{}
+	return &EnvS3Credentials{
+		AccessKeyIDVar:     "AWS_ACCESS_KEY_ID",
+		SecretAccessKeyVar: "AWS_SECRET_ACCESS_KEY",
+		SessionTokenVar:    "AWS_SESSION_TOKEN",
+	}
 }
 
 func (p EnvS3Credentials) Retrieve(ctx context.Context) (aws.Credentials, error) {
-	accessKeyID := os.Getenv("AWS_ACCESS_KEY_ID")
+
+	accessKeyID := os.Getenv(p.AccessKeyIDVar)
 	if accessKeyID == "" {
 		return aws.Credentials{}, ErrNoValidCredentials
 	}
@@ -57,6 +66,6 @@ func (p EnvS3Credentials) Retrieve(ctx context.Context) (aws.Credentials, error)
 		AccessKeyID:     accessKeyID,
 		SecretAccessKey: secretAccessKey,
 		SessionToken:    sessionToken,
-		Source:          "EnvProvider",
+		Source:          "EnvS3Provider",
 	}, nil
 }

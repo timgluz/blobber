@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
 	"log/slog"
 	"net/http"
 	"os"
@@ -42,6 +41,7 @@ func main() {
 
 	logger := initAppLogger(config)
 
+	logger.Debug("Initializing backend store", slog.String("provider", config.BlobProvider))
 	store, err := initStore(config, logger)
 	if err != nil {
 		fmt.Println("Error initializing blob store:", err)
@@ -84,17 +84,18 @@ func loadConfig(path string) (appConfig, error) {
 }
 
 func initAppLogger(config appConfig) *slog.Logger {
-	// Initialize application logger based on config
-	// For simplicity, using a basic logger here
 	logLevel := logLevelFromString(config.LogLevel)
 
-	return slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{
+	return slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: logLevel,
 	}))
 }
 
 func initStore(config appConfig, logger *slog.Logger) (*blobstore.S3BlobStore, error) {
 	credsProvider := blobstore.NewEnvS3Credentials()
+	if _, err := credsProvider.Retrieve(nil); err != nil {
+		return nil, fmt.Errorf("Failed to retrieve S3 credentials, stopping initialization: %w", err)
+	}
 
 	s3Client, err := blobstore.NewS3Client(config.S3Config, credsProvider, logger)
 	if err != nil {

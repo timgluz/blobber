@@ -1,0 +1,11 @@
+title: test index endpoints
+steps:
+  - title: get index
+    protocol: http
+    request:
+      method: GET
+      url: http://localhost:8080/index
+    expect:
+      code: OK
+      body:
+        success: true

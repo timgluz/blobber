@@ -1,13 +1,13 @@
 package blob
 
 import (
-	"encoding/json"
 	"io"
 	"log/slog"
 	"net/http"
 	"strings"
 
 	"github.com/timgluz/blobber/pkg/blobstore"
+	"github.com/timgluz/blobber/pkg/response"
 )
 
 type Handler struct {
@@ -53,9 +53,12 @@ func (h *Handler) listBlobs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(blobs)
+	response.RenderPaginatedJSON(w, blobs, response.Pagination{
+		Page:       1,
+		PageSize:   len(blobs),
+		TotalItems: len(blobs),
+		TotalPages: 1,
+	})
 }
 
 func (h *Handler) getBlob(w http.ResponseWriter, r *http.Request) {
