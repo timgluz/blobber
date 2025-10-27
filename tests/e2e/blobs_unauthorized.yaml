@@ -1,0 +1,68 @@
+title: test unauthorized access to blobs
+steps:
+  - title: get blobs without auth
+    protocol: http
+    request:
+      method: GET
+      url: http://localhost:8080/blobs
+    expect:
+      code: Unauthorized
+  - title: get blobs with invalid token
+    protocol: http
+    request:
+      method: GET
+      url: http://localhost:8080/blobs
+      header:
+        X-API-Token: "invalid_token"
+    expect:
+      code: Unauthorized
+  - title: get blob without auth
+    protocol: http
+    request:
+      method: GET
+      url: http://localhost:8080/blobs/test.json
+    expect:
+      code: Unauthorized
+  - title: get blob with invalid token
+    protocol: http
+    request:
+      method: GET
+      url: http://localhost:8080/blobs/test.json
+      header:
+        X-API-Token: "invalid_token"
+    expect:
+      code: Unauthorized
+  - title: upload blob without auth
+    protocol: http
+    request:
+      method: PUT
+      url: http://localhost:8080/blobs/unauth_blob.txt
+      body: "This should fail"
+    expect:
+      code: Unauthorized
+  - title: upload blob with invalid token
+    protocol: http
+    request:
+      method: PUT
+      url: http://localhost:8080/blobs/unauth_blob.txt
+      header:
+        X-API-Token: "invalid_token"
+      body: "This should fail"
+    expect:
+      code: Unauthorized
+  - title: delete blob without auth
+    protocol: http
+    request:
+      method: DELETE
+      url: http://localhost:8080/blobs/test.json
+    expect:
+      code: Unauthorized
+  - title: delete blob with invalid token
+    protocol: http
+    request:
+      method: DELETE
+      url: http://localhost:8080/blobs/test.json
+      header:
+        X-API-Token: "invalid_token"
+    expect:
+      code: Unauthorized
