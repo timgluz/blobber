@@ -1,0 +1,16 @@
+title: test swagger ui and openapi spec
+steps:
+  - title: get swagger ui
+    protocol: http
+    request:
+      method: GET
+      url: http://localhost:8080/static/swagger/index.html
+    expect:
+      code: OK
+  - title: get openapi spec
+    protocol: http
+    request:
+      method: GET
+      url: http://localhost:8080/static/openapi.yaml
+    expect:
+      code: OK

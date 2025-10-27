@@ -23,3 +23,8 @@ tasks:
     desc: Run end-to-end tests
     cmds:
       - scenarigo run tests/e2e/*.yaml
+
+  "lint:openapi":
+    desc: Lint OpenAPI specification
+    cmds:
+      - npx @redocly/cli@latest lint static/openapi.yaml

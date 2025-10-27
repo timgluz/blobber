@@ -1,0 +1,59 @@
+openapi: 3.1.1
+
+info:
+  title: Blobber API
+  version: 0.0.1
+  description: API for universal blob storage and retrieval.
+
+servers:
+  - url: "http://localhost:8080"
+    description: Local development server
+
+# tags are used to group related endpoints
+tags:
+  - name: blob
+    description: Operations related to blob storage and retrieval.
+  - name: health
+    description: Health check operations.
+
+paths:
+  /healthz:
+    get:
+      tags:
+        - health
+      summary: Health Check
+      description: Check the health status of the Blobber service.
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  message:
+                    type: string
+                    example: "Blobber service is running smoothly."
+  /readyz:
+    get:
+      tags:
+        - health
+      summary: Readiness Check
+      description: Check if the Blobber service is ready to accept requests.
+      responses:
+        "200":
+          description: Service is ready
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ready"
+                  message:
+                    type: string
+                    example: "Blobber service is ready to accept requests."

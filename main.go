@@ -80,6 +80,10 @@ func main() {
 	mux.Handle("/blobs", authMiddleware.Handler(apiMux))
 	mux.Handle("/blobs/", authMiddleware.Handler(apiMux))
 
+	// add static file server for /static/
+	fileServer := http.FileServer(http.Dir("./static"))
+	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
+
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", config.Port),
 		Handler: mux,
