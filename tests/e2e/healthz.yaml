@@ -1,0 +1,20 @@
+title: test health endpoints
+steps:
+  - title: get readyness
+    protocol: http
+    request:
+      method: GET
+      url: http://localhost:8080/readyz
+    expect:
+      code: OK
+      body:
+        success: true
+  - title: get liveness
+    protocol: http
+    request:
+      method: GET
+      url: http://localhost:8080/healthz
+    expect:
+      code: OK
+      body:
+        success: true

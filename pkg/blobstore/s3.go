@@ -62,6 +62,20 @@ func NewS3BlobStore(bucket string, client *s3.Client, logger *slog.Logger) (*S3B
 	return &S3BlobStore{bucket, client, logger}, nil
 }
 
+func (s *S3BlobStore) Ping(ctx context.Context) error {
+	s.logger.Debug("Ping S3BlobStore", slog.String("bucket", s.Bucket))
+	_, err := s.client.HeadBucket(ctx, &s3.HeadBucketInput{
+		Bucket: aws.String(s.Bucket),
+	})
+
+	if err != nil {
+		s.logger.Error("HeadBucket failed", slog.String("bucket", s.Bucket), slog.Any("error", err))
+		return err
+	}
+
+	return nil
+}
+
 func (s *S3BlobStore) Get(ctx context.Context, key string) ([]byte, error) {
 	s.logger.Debug("Get", slog.String("key", key))
 

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/timgluz/blobber/blob"
+	"github.com/timgluz/blobber/health"
 	"github.com/timgluz/blobber/home"
 	"github.com/timgluz/blobber/pkg/blobstore"
 	"github.com/timgluz/blobber/pkg/secret"
@@ -62,10 +63,13 @@ func main() {
 
 	homeHandler := home.NewHandler(logger)
 	blobHandler := blob.NewHandler(store, logger)
+	healthHandler := health.NewHandler(store, logger)
 
 	// Public routes
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", homeHandler.Handle)
+	mux.HandleFunc("/healthz", healthHandler.Healthz)
+	mux.HandleFunc("/readyz", healthHandler.Readyz)
 
 	// Protected routes
 	apiMux := http.NewServeMux()
