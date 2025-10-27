@@ -1,10 +1,14 @@
-title: test blobs endpoints
+title: test blobs endpoints with valid authorization
+secrets:
+  BLOBBER_API_TOKEN: valid_token_123
 steps:
   - title: delete leftover newblob.txt
     protocol: http
     request:
       method: DELETE
       url: http://localhost:8080/blobs/newblob.txt
+      header:
+        X-API-Token: "{{secrets.BLOBBER_API_TOKEN}}"
     expect:
       code: No Content
 
@@ -13,6 +17,8 @@ steps:
     request:
       method: GET
       url: http://localhost:8080/blobs
+      header:
+        X-API-Token: "{{secrets.BLOBBER_API_TOKEN}}"
     expect:
       code: OK
       body:
@@ -22,6 +28,8 @@ steps:
     request:
       method: GET
       url: http://localhost:8080/blobs?prefix=te
+      header:
+        X-API-Token: "{{secrets.BLOBBER_API_TOKEN}}"
     expect:
       code: OK
       body:
@@ -31,6 +39,8 @@ steps:
     request:
       method: GET
       url: http://localhost:8080/blobs/test.json
+      header:
+        X-API-Token: "{{secrets.BLOBBER_API_TOKEN}}"
     expect:
       code: OK
       body: '{"success": true}'
@@ -39,6 +49,8 @@ steps:
     request:
       method: GET
       url: http://localhost:8080/blobs/non-existing.json
+      header:
+        X-API-Token: "{{secrets.BLOBBER_API_TOKEN}}"
     expect:
       code: Not Found
       body: "Blob not found\n"
@@ -47,6 +59,8 @@ steps:
     request:
       method: PUT
       url: http://localhost:8080/blobs/newblob.txt
+      header:
+        X-API-Token: "{{secrets.BLOBBER_API_TOKEN}}"
       body: newblob
     expect:
       code: Created
@@ -56,6 +70,7 @@ steps:
       method: GET
       header:
         Accept: text/plain
+        X-API-Token: "{{secrets.BLOBBER_API_TOKEN}}"
       url: http://localhost:8080/blobs/newblob.txt
     expect:
       code: OK
@@ -65,6 +80,8 @@ steps:
     request:
       method: DELETE
       url: http://localhost:8080/blobs/newblob.txt
+      header:
+        X-API-Token: "{{secrets.BLOBBER_API_TOKEN}}"
     expect:
       code: No Content
   - title: get deleted blob
@@ -72,6 +89,8 @@ steps:
     request:
       method: GET
       url: http://localhost:8080/blobs/newblob.txt
+      header:
+        X-API-Token: "{{secrets.BLOBBER_API_TOKEN}}"
     expect:
       code: Not Found
       body: "Blob not found\n"

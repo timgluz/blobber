@@ -11,6 +11,7 @@ import (
 	"github.com/timgluz/blobber/blob"
 	"github.com/timgluz/blobber/home"
 	"github.com/timgluz/blobber/pkg/blobstore"
+	"github.com/timgluz/blobber/pkg/secret"
 	"gopkg.in/yaml.v2"
 )
 
@@ -20,6 +21,11 @@ type appConfig struct {
 
 	BlobProvider string             `yaml:"blob_provider"`
 	S3Config     blobstore.S3Config `yaml:"s3_config"`
+
+	Auth struct {
+		StoreType      string `yaml:"store_type"`
+		APITokenEnvVar string `yaml:"api_token_env_var"`
+	} `yaml:"auth"`
 }
 
 func main() {
@@ -48,14 +54,27 @@ func main() {
 		return
 	}
 
+	authMiddleware, err := initAuthMiddleware(config, logger)
+	if err != nil {
+		fmt.Println("Error initializing auth middleware:", err)
+		return
+	}
+
 	homeHandler := home.NewHandler(logger)
 	blobHandler := blob.NewHandler(store, logger)
 
+	// Public routes
 	mux := http.NewServeMux()
-
 	mux.HandleFunc("/", homeHandler.Handle)
-	mux.HandleFunc("/blobs", blobHandler.HandleList)
-	mux.HandleFunc("/blobs/{key}", blobHandler.Handle)
+
+	// Protected routes
+	apiMux := http.NewServeMux()
+	apiMux.HandleFunc("/blobs", blobHandler.HandleList)
+	apiMux.HandleFunc("/blobs/{key}", blobHandler.Handle)
+
+	// Wrap protected routes with auth middleware
+	mux.Handle("/blobs", authMiddleware.Handler(apiMux))
+	mux.Handle("/blobs/", authMiddleware.Handler(apiMux))
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", config.Port),
@@ -89,6 +108,23 @@ func initAppLogger(config appConfig) *slog.Logger {
 	return slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: logLevel,
 	}))
+}
+
+func initAuthMiddleware(config appConfig, logger *slog.Logger) (*secret.APITokenMiddleware, error) {
+	if config.Auth.StoreType == "" {
+		return nil, fmt.Errorf("auth store type is not configured")
+	}
+
+	var store secret.SecretStore
+	switch config.Auth.StoreType {
+	case "env":
+		store = secret.NewEnvSecretStore(config.Auth.APITokenEnvVar)
+	default:
+		logger.Warn("Unknown auth store type, defaulting to env", slog.String("store_type", config.Auth.StoreType))
+		return nil, fmt.Errorf("unknown auth store type: %s", config.Auth.StoreType)
+	}
+
+	return secret.NewAPITokenMiddleware(store, logger), nil
 }
 
 func initStore(config appConfig, logger *slog.Logger) (*blobstore.S3BlobStore, error) {

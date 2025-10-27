@@ -18,7 +18,7 @@ type PaginatedResponse[T any] struct {
 }
 
 func RenderPaginatedJSON[T any](w http.ResponseWriter, items []T, pagination Pagination) error {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", ContentTypeJSON)
 	w.WriteHeader(http.StatusOK)
 
 	response := PaginatedResponse[T]{
