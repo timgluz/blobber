@@ -23,7 +23,7 @@ func (h *Handler) Handle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		h.getBlob(w, r)
-	case http.MethodPut:
+	case http.MethodPut, http.MethodPost:
 		h.putBlob(w, r)
 	case http.MethodDelete:
 		h.deleteBlob(w, r)
@@ -75,7 +75,13 @@ func (h *Handler) getBlob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/octet-stream")
+	requestedMimeType := r.Header.Get("Accept")
+	if requestedMimeType != "" {
+		w.Header().Set("Content-Type", requestedMimeType)
+	} else {
+		w.Header().Set("Content-Type", response.ContentTypeOctetStream)
+	}
+
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 }
@@ -100,8 +106,7 @@ func (h *Handler) putBlob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("Blob stored successfully"))
+	response.RenderSuccessJSON(w, "Blob stored successfully", http.StatusCreated)
 }
 
 func (h *Handler) deleteBlob(w http.ResponseWriter, r *http.Request) {
@@ -118,6 +123,5 @@ func (h *Handler) deleteBlob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
-	w.Write([]byte("Blob deleted successfully"))
+	response.RenderSuccessJSON(w, "Blob deleted successfully", http.StatusNoContent)
 }

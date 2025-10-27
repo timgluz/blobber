@@ -28,9 +28,3 @@ func RenderPaginatedJSON[T any](w http.ResponseWriter, items []T, pagination Pag
 
 	return json.NewEncoder(w).Encode(response)
 }
-
-func RenderJSON(w http.ResponseWriter, data any) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	return json.NewEncoder(w).Encode(data)
-}

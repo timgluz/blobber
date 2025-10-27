@@ -1,5 +1,13 @@
 title: test blobs endpoints
 steps:
+  - title: delete leftover newblob.txt
+    protocol: http
+    request:
+      method: DELETE
+      url: http://localhost:8080/blobs/newblob.txt
+    expect:
+      code: No Content
+
   - title: get blobs
     protocol: http
     request:
@@ -34,4 +42,36 @@ steps:
     expect:
       code: Not Found
       body: "Blob not found\n"
-# TODO: add more tests for uploading, deleting blobs, etc.
+  - title: upload blob
+    protocol: http
+    request:
+      method: PUT
+      url: http://localhost:8080/blobs/newblob.txt
+      body: newblob
+    expect:
+      code: Created
+  - title: get uploaded blob as text
+    protocol: http
+    request:
+      method: GET
+      header:
+        Accept: text/plain
+      url: http://localhost:8080/blobs/newblob.txt
+    expect:
+      code: OK
+      body: "\"newblob\"\n"
+  - title: delete blob
+    protocol: http
+    request:
+      method: DELETE
+      url: http://localhost:8080/blobs/newblob.txt
+    expect:
+      code: No Content
+  - title: get deleted blob
+    protocol: http
+    request:
+      method: GET
+      url: http://localhost:8080/blobs/newblob.txt
+    expect:
+      code: Not Found
+      body: "Blob not found\n"
