@@ -32,7 +32,7 @@ type appConfig struct {
 func main() {
 	var configPath string
 	var port int
-	flag.StringVar(&configPath, "config", "config.yaml", "Path to configuration file")
+	flag.StringVar(&configPath, "config", "configs/dev.yaml", "Path to configuration file")
 	flag.IntVar(&port, "port", 8080, "Port to run the server on")
 	flag.Parse()
 
