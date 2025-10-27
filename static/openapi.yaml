@@ -8,6 +8,8 @@ info:
 servers:
   - url: "http://localhost:8080"
     description: Local development server
+  - url: "https://blobber-cq93.onrender.com"
+    description: staging server
 
 # tags are used to group related endpoints
 tags:
