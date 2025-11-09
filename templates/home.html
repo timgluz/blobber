@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>{{.Title}}</title>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content="Basic API for Blobstores" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
+  </head>
+  <body>
+		<main class="container">
+      <header>
+        <h1>{{.Title}}</h1>
+        <p>Basic API for Blobstores</p>
+        <p>Version: {{.Version}} </p>
+        <p>Provider: {{.BlobProvider}}</p>
+      </header>
+
+      <section>
+        <h2>Getting Started</h2>
+        <p>
+          To get started with Blobber, visit the
+          <a href="/static/swagger">documentation</a> page for detailed guides and API references.
+        </p>
+      </section>
+
+      <section>
+        <h2>Features</h2>
+        <ul>
+          <li>Upload and store blobs of data</li>
+          <li>Retrieve blobs using unique identifiers</li>
+          <li>Delete blobs when no longer needed</li>
+          <li>Support for multiple storage backends</li>
+        </ul>
+      </section>
+
+      <footer>
+        <p>&copy; 2025 Blobber. All rights reserved.</p>
+      </footer>
+  </body>
+</html>

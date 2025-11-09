@@ -62,7 +62,13 @@ func main() {
 		return
 	}
 
-	homeHandler := home.NewHandler(logger)
+	homeData := home.HandlerData{
+		Title:        "Blobber - Blob Storage Service",
+		Version:      "0.0.1",
+		BlobProvider: config.BlobProvider,
+	}
+
+	homeHandler := home.NewHandler(homeData, logger)
 	blobHandler := blob.NewHandler(store, logger)
 	healthHandler := health.NewHandler(store, logger)
 
