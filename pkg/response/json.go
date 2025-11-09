@@ -31,3 +31,15 @@ func RenderSuccessJSON(w http.ResponseWriter, message string, statusCode int) er
 
 	return json.NewEncoder(w).Encode(response)
 }
+
+func RenderErrorJSON(w http.ResponseWriter, message string, statusCode int) error {
+	w.Header().Set("Content-Type", ContentTypeJSON)
+	w.WriteHeader(statusCode)
+	response := StatusResponse{
+		Success: false,
+		Error:   true,
+		Message: message,
+	}
+
+	return json.NewEncoder(w).Encode(response)
+}

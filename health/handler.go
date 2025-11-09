@@ -20,7 +20,7 @@ func NewHandler(store blobstore.BlobStore, logger *slog.Logger) *Handler {
 func (h *Handler) Healthz(w http.ResponseWriter, r *http.Request) {
 	if err := h.store.Ping(r.Context()); err != nil {
 		h.logger.Error("Blob store ping failed", slog.String("error", err.Error()))
-		http.Error(w, "Blob store is unreachable", http.StatusInternalServerError)
+		response.RenderErrorJSON(w, "Blob store is unreachable", http.StatusInternalServerError)
 		return
 	}
 

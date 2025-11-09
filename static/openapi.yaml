@@ -31,14 +31,13 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: "ok"
-                  message:
-                    type: string
-                    example: "Blobber service is running smoothly."
+                "$ref": "#/components/schemas/SuccessJsonResponse"
+        "500":
+          description: Service is unhealthy
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorJsonResponse"
   /readyz:
     get:
       tags:
@@ -51,11 +50,34 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: "ready"
-                  message:
-                    type: string
-                    example: "Blobber service is ready to accept requests."
+                "$ref": "#/components/schemas/SuccessJsonResponse"
+        "503":
+          description: Service is not ready
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorJsonResponse"
+
+components:
+  schemas:
+    SuccessJsonResponse:
+      type: object
+      properties:
+        success:
+          type: bool
+          example: true
+        message:
+          type: string
+          example: "Operation completed successfully."
+    ErrorJsonResponse:
+      type: object
+      properties:
+        success:
+          type: bool
+          example: false
+        error:
+          type: bool
+          example: false
+        message:
+          type: string
+          example: "Detailed error message goes here."

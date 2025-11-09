@@ -12,6 +12,7 @@ import (
 	"github.com/timgluz/blobber/health"
 	"github.com/timgluz/blobber/home"
 	"github.com/timgluz/blobber/pkg/blobstore"
+	"github.com/timgluz/blobber/pkg/cors"
 	"github.com/timgluz/blobber/pkg/secret"
 	"gopkg.in/yaml.v2"
 )
@@ -86,7 +87,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", config.Port),
-		Handler: mux,
+		Handler: cors.CORSMiddleware(mux),
 	}
 
 	logger.Info("Running server", slog.Int("port", config.Port))
