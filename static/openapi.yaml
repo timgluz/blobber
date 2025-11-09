@@ -57,8 +57,158 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/ErrorJsonResponse"
+  /blobs:
+    get:
+      tags:
+        - blob
+      summary: list blobs
+      description: Retrieve a list of all stored blobs. Supports filtering by prefix.
+      parameters:
+        - in: query
+          name: prefix
+          schema:
+            type: string
+          required: false
+          description: Filter blobs by prefix.
+      responses:
+        "200":
+          description: A list of blobs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: string
+                    example: ["blob1", "blob2", "blob3"]
+                  pagination:
+                    "$ref": "#/components/schemas/Pagination"
+        "405":
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorJsonResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorJsonResponse"
+  /blobs/{key}:
+    get:
+      tags:
+        - blob
+      summary: retrieve blob
+      description: Retrieve a blob by its unique identifier.
+      parameters:
+        - in: path
+          name: key
+          schema:
+            type: string
+          required: true
+          description: Unique identifier for the blob.
+      responses:
+        "200":
+          description: Blob retrieved successfully
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Blob not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorJsonResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorJsonResponse"
+    post:
+      tags:
+        - blob
+      summary: store blob
+      description: Store a new blob and return its unique identifier.
+      parameters:
+        - in: path
+          name: key
+          schema:
+            type: string
+          required: true
+          description: Unique identifier for the blob.
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        "201":
+          description: Blob stored successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/SuccessJsonResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorJsonResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorJsonResponse"
+    delete:
+      tags:
+        - blob
+      summary: delete blob
+      description: Delete a blob by its unique identifier.
+      parameters:
+        - in: path
+          name: key
+          schema:
+            type: string
+          required: true
+          description: Unique identifier for the blob.
+      responses:
+        "204":
+          description: Blob deleted successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/SuccessJsonResponse"
+        "404":
+          description: Blob not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorJsonResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ErrorJsonResponse"
+
+security:
+  - ApiKeyAuth: []
 
 components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Token
   schemas:
     SuccessJsonResponse:
       type: object
@@ -81,3 +231,18 @@ components:
         message:
           type: string
           example: "Detailed error message goes here."
+    Pagination:
+      type: object
+      properties:
+        Page:
+          type: integer
+          example: 1
+        PageSize:
+          type: integer
+          example: 10
+        TotalItems:
+          type: integer
+          example: 100
+        TotalPages:
+          type: integer
+          example: 10

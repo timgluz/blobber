@@ -37,7 +37,7 @@ func (h *Handler) HandleList(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		h.listBlobs(w, r)
 	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		response.RenderErrorJSON(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -49,7 +49,7 @@ func (h *Handler) listBlobs(w http.ResponseWriter, r *http.Request) {
 	blobs, err := h.store.List(r.Context(), prefix)
 	if err != nil {
 		h.logger.Error("failed to list blobs", slog.String("error", err.Error()))
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		response.RenderErrorJSON(w, "Failed to list blobs", http.StatusInternalServerError)
 		return
 	}
 
@@ -89,20 +89,20 @@ func (h *Handler) getBlob(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) putBlob(w http.ResponseWriter, r *http.Request) {
 	key := r.PathValue("key")
 	if key == "" {
-		http.Error(w, "Key is required", http.StatusBadRequest)
+		response.RenderErrorJSON(w, "Key is required", http.StatusBadRequest)
 		return
 	}
 
 	data, err := io.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, "Failed to read request body", http.StatusBadRequest)
+		response.RenderErrorJSON(w, "Failed to read request body", http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
 
 	err = h.store.Put(r.Context(), key, data)
 	if err != nil {
-		http.Error(w, "Failed to store blob", http.StatusInternalServerError)
+		response.RenderErrorJSON(w, "Failed to store blob", http.StatusInternalServerError)
 		return
 	}
 
