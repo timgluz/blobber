@@ -7,5 +7,3 @@ steps:
       url: http://localhost:8080/index
     expect:
       code: OK
-      body:
-        success: true

@@ -9,4 +9,5 @@ var (
 	ErrBucketNotFound     = errors.New("bucket not found")
 	ErrNoValidBucket      = errors.New("no valid bucket provided")
 	ErrNoValidBlobClient  = errors.New("no valid blob client provided")
+	ErrNoValidLogger      = errors.New("no valid logger provided")
 )

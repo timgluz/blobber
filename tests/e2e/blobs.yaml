@@ -10,7 +10,7 @@ steps:
       header:
         X-API-Token: "{{secrets.BLOBBER_API_TOKEN}}"
     expect:
-      code: No Content
+      code: Not Found
 
   - title: get blobs
     protocol: http

@@ -76,6 +76,23 @@ func (s *S3BlobStore) Ping(ctx context.Context) error {
 	return nil
 }
 
+func (s *S3BlobStore) Has(ctx context.Context, key string) error {
+	s.logger.Debug("Has", slog.String("key", key))
+
+	_, err := s.client.HeadObject(ctx, &s3.HeadObjectInput{
+		Bucket: aws.String(s.Bucket),
+		Key:    aws.String(key),
+	})
+
+	if err != nil {
+		s.logger.Error("HeadObject failed", slog.String("key", key),
+			slog.String("bucket", s.Bucket), slog.Any("error", err))
+		return ErrBlobNotFound
+	}
+
+	return nil
+}
+
 func (s *S3BlobStore) Get(ctx context.Context, key string) ([]byte, error) {
 	s.logger.Debug("Get", slog.String("key", key))
 
@@ -120,6 +137,11 @@ func (s *S3BlobStore) Put(ctx context.Context, key string, data []byte) error {
 
 func (s *S3BlobStore) Delete(ctx context.Context, key string) error {
 	s.logger.Debug("Delete", slog.String("key", key))
+
+	if err := s.Has(ctx, key); err != nil {
+		s.logger.Error("Delete failed - object does not exist", slog.String("key", key), slog.String("bucket", s.Bucket), slog.Any("error", err))
+		return err
+	}
 
 	_, err := s.client.DeleteObject(ctx, &s3.DeleteObjectInput{
 		Bucket: aws.String(s.Bucket),

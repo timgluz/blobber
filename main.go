@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log/slog"
@@ -21,8 +22,9 @@ type appConfig struct {
 	LogLevel string `yaml:"log_level"`
 	Port     int    `yaml:"port"`
 
-	BlobProvider string             `yaml:"blob_provider"`
-	S3Config     blobstore.S3Config `yaml:"s3_config"`
+	BlobProvider string              `yaml:"blob_provider"`
+	S3Config     blobstore.S3Config  `yaml:"s3_config"`
+	GCPConfig    blobstore.GCPConfig `yaml:"gcp_config"`
 
 	Auth struct {
 		StoreType      string `yaml:"store_type"`
@@ -142,9 +144,20 @@ func initAuthMiddleware(config appConfig, logger *slog.Logger) (*secret.APIToken
 	return secret.NewAPITokenMiddleware(store, logger), nil
 }
 
-func initStore(config appConfig, logger *slog.Logger) (*blobstore.S3BlobStore, error) {
+func initStore(config appConfig, logger *slog.Logger) (blobstore.BlobStore, error) {
+	switch strings.ToLower(config.BlobProvider) {
+	case string(blobstore.BlobStoreTypeS3):
+		return initS3Store(config, logger)
+	case string(blobstore.BlobStoreTypeGCP):
+		return initGCPStore(config, logger)
+	default:
+		return nil, fmt.Errorf("unsupported blob provider: %s", config.BlobProvider)
+	}
+}
+
+func initS3Store(config appConfig, logger *slog.Logger) (blobstore.BlobStore, error) {
 	credsProvider := blobstore.NewEnvS3Credentials()
-	if _, err := credsProvider.Retrieve(nil); err != nil {
+	if _, err := credsProvider.Retrieve(context.Background()); err != nil {
 		return nil, fmt.Errorf("Failed to retrieve S3 credentials, stopping initialization: %w", err)
 	}
 
@@ -157,6 +170,28 @@ func initStore(config appConfig, logger *slog.Logger) (*blobstore.S3BlobStore, e
 	store, err := blobstore.NewS3BlobStore(config.S3Config.Bucket, s3Client, logger)
 	if err != nil {
 		fmt.Println("Error creating S3 blob store:", err)
+		return nil, err
+	}
+
+	return store, nil
+}
+
+func initGCPStore(config appConfig, logger *slog.Logger) (blobstore.BlobStore, error) {
+	//credsProvider := blobstore.NewEnvGCPCredentials()
+	credsProvider := blobstore.NewJSONFileGCPCredentials(config.GCPConfig.CredentialsPath)
+	if _, err := credsProvider.Retrieve(context.Background()); err != nil {
+		return nil, fmt.Errorf("Failed to retrieve GCP credentials, stopping initialization: %w", err)
+	}
+
+	gcpClient, err := blobstore.NewGCPClient(config.GCPConfig, credsProvider, logger)
+	if err != nil {
+		fmt.Println("Error creating GCP client:", err)
+		return nil, err
+	}
+
+	store, err := blobstore.NewGCPBlobStore(config.GCPConfig.Bucket, gcpClient, logger)
+	if err != nil {
+		fmt.Println("Error creating GCP blob store:", err)
 		return nil, err
 	}
 

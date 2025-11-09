@@ -1,6 +1,7 @@
 package blob
 
 import (
+	"errors"
 	"io"
 	"log/slog"
 	"net/http"
@@ -119,6 +120,11 @@ func (h *Handler) deleteBlob(w http.ResponseWriter, r *http.Request) {
 	h.logger.Debug("Deleting blob", slog.String("key", key))
 	err := h.store.Delete(r.Context(), key)
 	if err != nil {
+		if errors.Is(err, blobstore.ErrBlobNotFound) {
+			http.Error(w, "Blob not found", http.StatusNotFound)
+			return
+		}
+
 		http.Error(w, "Failed to delete blob", http.StatusInternalServerError)
 		return
 	}
