@@ -10,6 +10,11 @@ type Credentials struct {
 	// GCP
 	APIKey          string
 	CredentialsJSON []byte
+
+	// Azure
+	TenantID     string
+	ClientID     string
+	ClientSecret string
 }
 
 type CredentialsProvider interface {

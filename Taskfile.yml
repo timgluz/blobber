@@ -7,7 +7,7 @@ dotenv: [".env"]
 vars:
   GREETING: Hello, World!
   PORT: 8080
-  CONFIG_PATH: configs/dev.yaml
+  CONFIG_PATH: configs/dev-azure.yaml
 
 tasks:
   default:
