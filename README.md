@@ -14,14 +14,15 @@ which has no direct access to cloud storage providers and usually relies only we
 - Upload and download files to/from multiple cloud storage providers
 - Unified API for different storage backends
 - Easy to extend with new storage providers
+- Simple configuration using environment variables or config files
+- Monitoring and logging support
 
 ## Supported Storage Providers
 
-- Amazon S3 and compatible services (e.g., MinIO, DigitalOcean Spaces, Cloudflare R2)
-
-- WIP: Google Cloud Storage
-- WIP: Microsoft Azure Blob Storage
-- WIP: Alicloud Object Storage Service (OSS)
+- [x] Amazon S3 and compatible services (e.g., MinIO, DigitalOcean Spaces, Cloudflare R2)
+- [x] Google Cloud Storage
+- [x] Microsoft Azure Blob Storage
+- [x] Alicloud Object Storage Service (OSS)
 
 ## Getting Started
 
@@ -43,7 +44,7 @@ To get started with Blobber, follow these steps:
 3. Configure the storage providers by setting the appropriate environment variables.
    Refer to the documentation for each provider for the required configuration.
 
-```
+```bash
 cp .env.example .env
 vim .env
 
