@@ -3,10 +3,11 @@ package blobstore
 import "context"
 
 type Credentials struct {
-	// AWS
+	// AWS, Alicloud
 	AccessKeyID     string
 	SecretAccessKey string
 	SessionToken    string
+
 	// GCP
 	APIKey          string
 	CredentialsJSON []byte

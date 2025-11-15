@@ -5,9 +5,10 @@ import "context"
 type BlobStoreType string
 
 const (
-	BlobStoreTypeS3    BlobStoreType = "s3"
-	BlobStoreTypeGCP   BlobStoreType = "gcp"
-	BlobStoreTypeAzure BlobStoreType = "azure"
+	BlobStoreTypeS3       BlobStoreType = "s3"
+	BlobStoreTypeGCP      BlobStoreType = "gcp"
+	BlobStoreTypeAzure    BlobStoreType = "azure"
+	BlobStoreTypeAlicloud BlobStoreType = "alicloud"
 )
 
 type BlobStore interface {

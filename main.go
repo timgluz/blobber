@@ -22,10 +22,11 @@ type appConfig struct {
 	LogLevel string `yaml:"log_level"`
 	Port     int    `yaml:"port"`
 
-	BlobProvider string                `yaml:"blob_provider"`
-	S3Config     blobstore.S3Config    `yaml:"s3_config"`
-	GCPConfig    blobstore.GCPConfig   `yaml:"gcp_config"`
-	AzureConfig  blobstore.AzureConfig `yaml:"azure_config"`
+	BlobProvider   string                   `yaml:"blob_provider"`
+	S3Config       blobstore.S3Config       `yaml:"s3_config"`
+	GCPConfig      blobstore.GCPConfig      `yaml:"gcp_config"`
+	AzureConfig    blobstore.AzureConfig    `yaml:"azure_config"`
+	AlicloudConfig blobstore.AlicloudConfig `yaml:"alicloud_config"`
 
 	Auth struct {
 		StoreType      string `yaml:"store_type"`
@@ -153,6 +154,8 @@ func initStore(config appConfig, logger *slog.Logger) (blobstore.BlobStore, erro
 		return initGCPStore(config, logger)
 	case string(blobstore.BlobStoreTypeAzure):
 		return initAzureStore(config, logger)
+	case string(blobstore.BlobStoreTypeAlicloud):
+		return initAlicloudStore(config, logger)
 	default:
 		return nil, fmt.Errorf("unsupported blob provider: %s", config.BlobProvider)
 	}
@@ -215,6 +218,28 @@ func initAzureStore(config appConfig, logger *slog.Logger) (blobstore.BlobStore,
 	store, err := blobstore.NewAzureBlobStore(config.AzureConfig.Container, azureClient, logger)
 	if err != nil {
 		fmt.Println("Error creating Azure blob store:", err)
+		return nil, err
+	}
+
+	return store, nil
+}
+
+func initAlicloudStore(config appConfig, logger *slog.Logger) (blobstore.BlobStore, error) {
+	credsProvider := blobstore.NewEnvAlicloudCredentials()
+	if _, err := credsProvider.Retrieve(context.Background()); err != nil {
+		return nil, fmt.Errorf("Failed to retrieve Alicloud credentials, stopping initialization: %w", err)
+
+	}
+
+	alicloudClient, err := blobstore.NewAlicloudClient(config.AlicloudConfig, credsProvider, logger)
+	if err != nil {
+		fmt.Println("Error creating Alicloud client:", err)
+		return nil, err
+	}
+
+	store, err := blobstore.NewAlicloudBlobStore(config.AlicloudConfig, alicloudClient, logger)
+	if err != nil {
+		fmt.Println("Error creating Alicloud blob store:", err)
 		return nil, err
 	}
 
