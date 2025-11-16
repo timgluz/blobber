@@ -10,5 +10,5 @@ store:
     endpoint: "https://0d10b377f57cf5a47fd9ca9b8ba2d5c2.r2.cloudflarestorage.com"
     use_path_style: true
 auth:
-  store_type: env
+  provider: env
   api_token_env_var: "BLOBBER_API_TOKEN"
