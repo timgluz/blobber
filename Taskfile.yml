@@ -18,7 +18,7 @@ tasks:
     desc: Run the API server
     cmds:
       - go mod tidy
-      - go run main.go --port {{.PORT}} --config {{.CONFIG_PATH}}
+      - go run *.go --port {{.PORT}} --config {{.CONFIG_PATH}}
 
   "test:e2e":
     desc: Run end-to-end tests

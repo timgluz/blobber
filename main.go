@@ -9,6 +9,8 @@ import (
 	"os"
 	"strings"
 
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+
 	"github.com/timgluz/blobber/blob"
 	"github.com/timgluz/blobber/health"
 	"github.com/timgluz/blobber/home"
@@ -18,6 +20,10 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+var appName = "blobber"
+var appVersion = "0.0.1"
+
+// TODO: move to separate config.go file, add validation
 type appConfig struct {
 	Port int `yaml:"port"`
 
@@ -43,7 +49,7 @@ func main() {
 	var configPath string
 	var port int
 	flag.StringVar(&configPath, "config", "configs/dev.yaml", "Path to configuration file")
-	flag.IntVar(&port, "port", 8080, "Port to run the server on")
+	flag.IntVar(&port, "port", 8000, "Port to run the server on")
 	flag.Parse()
 
 	config, err := loadConfig(configPath)
@@ -55,8 +61,20 @@ func main() {
 	if port != 0 {
 		config.Port = port
 	}
-
 	logger := initAppLogger(config)
+
+	ctx := context.Background()
+	otelShutdown, err := setupOpenTelemetry(ctx)
+	if err != nil {
+		logger.Error("Failed to setup OpenTelemetry", slog.String("error", err.Error()))
+		return
+	}
+	defer func() {
+		if err := otelShutdown(ctx); err != nil {
+			logger.Error("Error during OpenTelemetry shutdown", slog.String("error", err.Error()))
+		}
+		ctx.Done()
+	}()
 
 	logger.Debug("Initializing backend store", slog.String("provider", config.Store.Provider))
 	store, err := initStore(config, logger)
@@ -102,7 +120,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", config.Port),
-		Handler: cors.CORSMiddleware(mux),
+		Handler: cors.CORSMiddleware(otelhttp.NewHandler(mux, "/")),
 	}
 
 	logger.Info("Running server", slog.Int("port", config.Port))
