@@ -4,7 +4,7 @@ steps:
     protocol: http
     request:
       method: GET
-      url: http://localhost:8080/readyz
+      url: http://localhost:8000/readyz
     expect:
       code: OK
       body:
@@ -13,7 +13,7 @@ steps:
     protocol: http
     request:
       method: GET
-      url: http://localhost:8080/healthz
+      url: http://localhost:8000/healthz
     expect:
       code: OK
       body:

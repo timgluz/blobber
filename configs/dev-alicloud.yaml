@@ -1,11 +1,13 @@
 ---
-port: 8080
-log_level: debug
-blob_provider: alicloud
-alicloud_config:
-  bucket: blobber-test
-  region: eu-central-1
-  endpoint: "oss-eu-central-1.aliyuncs.com"
+port: 8000
+log:
+  level: debug
+store:
+  provider: alicloud
+  alicloud:
+    bucket: blobber-test
+    region: eu-central-1
+    endpoint: "oss-eu-central-1.aliyuncs.com"
 auth:
-  store_type: env
+  provider: env
   api_token_env_var: "BLOBBER_API_TOKEN"

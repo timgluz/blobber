@@ -4,13 +4,13 @@ steps:
     protocol: http
     request:
       method: GET
-      url: http://localhost:8080/static/swagger/index.html
+      url: http://localhost:8000/static/swagger/index.html
     expect:
       code: OK
   - title: get openapi spec
     protocol: http
     request:
       method: GET
-      url: http://localhost:8080/static/openapi.yaml
+      url: http://localhost:8000/static/openapi.yaml
     expect:
       code: OK

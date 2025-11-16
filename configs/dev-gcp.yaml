@@ -1,11 +1,13 @@
 ---
-port: 8080
-log_level: debug
-blob_provider: gcp
-gcp_config:
-  bucket: blobber-test
-  project_id: blobber-477713
-  credentials_path: /home/timgluz/Documents/blobber-test-gcp-creds.json
+port: 8000
+log:
+  level: debug
+store:
+  provider: gcp
+  gcp:
+    bucket: blobber-test
+    project_id: blobber-477713
+    credentials_path: /home/timgluz/Documents/blobber-test-gcp-creds.json
 auth:
-  store_type: env
+  provider: env
   api_token_env_var: "BLOBBER_API_TOKEN"

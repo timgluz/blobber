@@ -4,6 +4,6 @@ steps:
     protocol: http
     request:
       method: GET
-      url: http://localhost:8080/index
+      url: http://localhost:8000/index
     expect:
       code: OK

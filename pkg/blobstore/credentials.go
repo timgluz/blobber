@@ -2,6 +2,13 @@ package blobstore
 
 import "context"
 
+type AuthProviderType string
+
+const (
+	AuthProviderEnv  AuthProviderType = "env"
+	AuthProviderFile AuthProviderType = "file"
+)
+
 type Credentials struct {
 	// AWS, Alicloud
 	AccessKeyID     string

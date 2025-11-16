@@ -6,7 +6,7 @@ info:
   description: API for universal blob storage and retrieval.
 
 servers:
-  - url: "http://localhost:8080"
+  - url: "http://localhost:8000"
     description: Local development server
   - url: "https://blobber-cq93.onrender.com"
     description: staging server

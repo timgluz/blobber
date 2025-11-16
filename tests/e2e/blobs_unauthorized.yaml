@@ -4,14 +4,14 @@ steps:
     protocol: http
     request:
       method: GET
-      url: http://localhost:8080/blobs
+      url: http://localhost:8000/blobs
     expect:
       code: Unauthorized
   - title: get blobs with invalid token
     protocol: http
     request:
       method: GET
-      url: http://localhost:8080/blobs
+      url: http://localhost:8000/blobs
       header:
         X-API-Token: "invalid_token"
     expect:
@@ -20,14 +20,14 @@ steps:
     protocol: http
     request:
       method: GET
-      url: http://localhost:8080/blobs/test.json
+      url: http://localhost:8000/blobs/test.json
     expect:
       code: Unauthorized
   - title: get blob with invalid token
     protocol: http
     request:
       method: GET
-      url: http://localhost:8080/blobs/test.json
+      url: http://localhost:8000/blobs/test.json
       header:
         X-API-Token: "invalid_token"
     expect:
@@ -36,7 +36,7 @@ steps:
     protocol: http
     request:
       method: PUT
-      url: http://localhost:8080/blobs/unauth_blob.txt
+      url: http://localhost:8000/blobs/unauth_blob.txt
       body: "This should fail"
     expect:
       code: Unauthorized
@@ -44,7 +44,7 @@ steps:
     protocol: http
     request:
       method: PUT
-      url: http://localhost:8080/blobs/unauth_blob.txt
+      url: http://localhost:8000/blobs/unauth_blob.txt
       header:
         X-API-Token: "invalid_token"
       body: "This should fail"
@@ -54,14 +54,14 @@ steps:
     protocol: http
     request:
       method: DELETE
-      url: http://localhost:8080/blobs/test.json
+      url: http://localhost:8000/blobs/test.json
     expect:
       code: Unauthorized
   - title: delete blob with invalid token
     protocol: http
     request:
       method: DELETE
-      url: http://localhost:8080/blobs/test.json
+      url: http://localhost:8000/blobs/test.json
       header:
         X-API-Token: "invalid_token"
     expect:

@@ -1,11 +1,13 @@
 ---
-port: 8080
-log_level: debug
-blob_provider: azure
-azure_config:
-  account_name: "blobbertest"
-  container: "blobber-test"
-  endpoint: "https://blobbertest.blob.core.windows.net/"
+port: 8000
+log:
+  level: debug
+store:
+  provider: azure
+  azure:
+    account_name: "blobbertest"
+    container: "blobber-test"
+    endpoint: "https://blobbertest.blob.core.windows.net/"
 auth:
-  store_type: env
+  provider: env
   api_token_env_var: "BLOBBER_API_TOKEN"
